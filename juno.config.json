@@ -1,0 +1,11 @@
+{
+  "satellite": {
+    "id": "svftd-daaaa-aaaal-adr3a-cai"
+  },
+  "networks": {
+    "ic": {
+      "providers": ["https://icp0.io"],
+      "type": "persistent"
+    }
+  }
+}
