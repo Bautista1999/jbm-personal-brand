@@ -1,1 +1,9 @@
-IyBQZXJzb25hbCBCcmFuZCBXZWJzaXRlIC0gSnVhbiBCYXV0aXN0YSBNYXJ0w61uZXoKCk1vZGVybiwgbWluaW1hbGlzdCBwZXJzb25hbCBicmFuZCB3ZWJzaXRlIGJ1aWx0IHdpdGggU3ZlbHRlS2l0IGFuZCBKdW5vLmJ1aWxkLgoKIyMgVGVjaCBTdGFjawotIEZyb250ZW5kOiBTdmVsdGVLaXQKLSBTdHlsaW5nOiBUYWlsd2luZENTUwotIEJhY2tlbmQ6IEp1bm8uYnVpbGQKLSBCdWlsZCBUb29sOiBWaXRl
+# Personal Brand Website - Juan Bautista Martínez
+
+Modern, minimalist personal brand website built with SvelteKit and Juno.build.
+
+## Tech Stack
+- Frontend: SvelteKit
+- Styling: TailwindCSS
+- Backend: Juno.build
+- Build Tool: Vite
