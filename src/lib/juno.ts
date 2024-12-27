@@ -1,4 +1,4 @@
-import { initJuno as initJunoCore, listDocs, getDoc } from '@junobuild/core';
+import { initJuno as initJunoCore, getDoc } from '@junobuild/core';
 
 export const initJuno = async () => {
   await initJunoCore({
