@@ -6,6 +6,9 @@
     "ic": {
       "providers": ["https://icp0.io"],
       "type": "persistent"
+    },
+    "local": {
+      "type": "ephemeral"
     }
   }
 }
