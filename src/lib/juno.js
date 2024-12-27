@@ -1,13 +1,18 @@
-import { initJuno as initJunoCore, getDoc } from 'https://esm.sh/@junobuild/core';
+let initialized = false;
 
 export const initJuno = async () => {
-  await initJunoCore({
-    satelliteId: 'svftd-daaaa-aaaal-adr3a-cai'
-  });
+  if (!initialized) {
+    const { initJuno: init } = await import('@junobuild/core');
+    await init({
+      satelliteId: 'svftd-daaaa-aaaal-adr3a-cai'
+    });
+    initialized = true;
+  }
 };
 
 export const getUserData = async () => {
   try {
+    const { getDoc } = await import('@junobuild/core');
     const user = await getDoc('user', 'icofm-qqqrs-aqxwl-cbdbk-qkih6-tbopi-qjz5x-lcmz4-hgt5p-cvtc5-tae');
     return user?.data;
   } catch (err) {
