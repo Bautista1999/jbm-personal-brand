@@ -1,4 +1,4 @@
-import { initJuno as initJunoCore, listDocs } from '@junobuild/core';
+import { initJuno as initJunoCore, listDocs, getDoc } from '@junobuild/core';
 
 export const initJuno = async () => {
   await initJunoCore({
@@ -6,12 +6,12 @@ export const initJuno = async () => {
   });
 };
 
-export const getProfile = async () => {
+export const getUserData = async () => {
   try {
-    const result = await listDocs('profile', {});
-    return result[0];
+    const user = await getDoc('user', 'icofm-qqqrs-aqxwl-cbdbk-qkih6-tbopi-qjz5x-lcmz4-hgt5p-cvtc5-tae');
+    return user?.data;
   } catch (err) {
-    console.error('Error fetching profile:', err);
+    console.error('Error fetching user:', err);
     return null;
   }
 };

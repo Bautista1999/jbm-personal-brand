@@ -1,5 +1,6 @@
-import { initJuno, getProfile } from '$lib/juno';
+import { getUserData } from '$lib/juno';
 
 export const load = async () => {
-  return { profile: await getProfile() };
+  const userData = await getUserData();
+  return { userData };
 };
