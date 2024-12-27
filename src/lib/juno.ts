@@ -7,6 +7,11 @@ export const initJuno = async () => {
 };
 
 export const getProfile = async () => {
-  const result = await listDocs('profile', {});
-  return result[0];
+  try {
+    const result = await listDocs('profile', {});
+    return result[0];
+  } catch (err) {
+    console.error('Error fetching profile:', err);
+    return null;
+  }
 };
