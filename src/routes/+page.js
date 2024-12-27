@@ -1,11 +1,6 @@
-import { initJuno, listDocs } from '@junobuild/core';
+import { getUserData } from '$lib/juno';
 
 export const load = async () => {
-  try {
-    const result = await listDocs('profile', {});
-    return { profile: result[0] };
-  } catch (err) {
-    console.error('Error fetching profile:', err);
-    return { profile: null };
-  }
+  const userData = await getUserData();
+  return { userData };
 };
