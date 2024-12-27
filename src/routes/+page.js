@@ -1,4 +1,4 @@
-import { listDocs } from '@junobuild/core';
+import { initJuno, listDocs } from '@junobuild/core';
 
 export const load = async () => {
   try {
