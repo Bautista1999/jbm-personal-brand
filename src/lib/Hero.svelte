@@ -115,11 +115,11 @@
 
     <div class="flex gap-4" in:fade={{ delay: 400, duration: 800 }}>
         <a
-            href="#projects"
+            href="#about"
             class="px-6 py-3 bg-gradient-to-br from-purple-600 to-pink-600 hover:opacity-90 text-white rounded-lg shadow-lg transition-all duration-300 transform hover:-translate-y-2 hover:scale-105 hover:shadow-xl animate-bounce-subtle"
             style="animation-delay: 1s"
         >
-            See My Work
+            See My Code
         </a>
         <a
             href="#contact"
