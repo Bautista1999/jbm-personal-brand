@@ -85,7 +85,7 @@
     </div>
 
     <h1
-        class="text-5xl md:text-7xl font-extrabold leading-tight mb-4 min-h-[2em]"
+        class="text-5xl md:text-7xl font-extrabold leading-normal mb-4 py-2"
         in:fly={{ y: -20, duration: 800 }}
     >
         {#if mounted}
@@ -95,7 +95,7 @@
                 I'm
             {/if}
             <span
-                class="bg-gradient-to-r from-pink-500 to-purple-500 text-transparent bg-clip-text animate-gradient-x inline-block"
+                class="bg-gradient-to-r from-pink-500 to-purple-500 text-transparent bg-clip-text animate-gradient-x inline-block leading-normal"
             >
                 {displayedText}<span class="animate-blink">|</span>
             </span>
@@ -130,3 +130,88 @@
         </a>
     </div>
 </section>
+
+<style>
+    /* Ensure gradient text doesn't get clipped */
+    .text-transparent {
+        -webkit-background-clip: text;
+        background-clip: text;
+        overflow: visible;
+        padding-top: 0.1em;
+        padding-bottom: 0.1em;
+    }
+
+    /* Gradient animation */
+    @keyframes gradient-x {
+        0%, 100% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+    }
+
+    .animate-gradient-x {
+        background-size: 200% 200%;
+        animation: gradient-x 3s ease infinite;
+    }
+
+    /* Blinking cursor */
+    @keyframes blink {
+        0%, 50% {
+            opacity: 1;
+        }
+        51%, 100% {
+            opacity: 0;
+        }
+    }
+
+    .animate-blink {
+        animation: blink 1s infinite;
+    }
+
+    /* Floating animation */
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .animate-float {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    /* Blob animation */
+    @keyframes blob {
+        0%, 100% {
+            transform: translate(0px, 0px) scale(1);
+        }
+        33% {
+            transform: translate(30px, -50px) scale(1.1);
+        }
+        66% {
+            transform: translate(-20px, 20px) scale(0.9);
+        }
+    }
+
+    .animate-blob {
+        animation: blob 7s infinite;
+    }
+
+    /* Subtle bounce */
+    @keyframes bounce-subtle {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-5px);
+        }
+    }
+
+    .animate-bounce-subtle {
+        animation: bounce-subtle 2s ease-in-out infinite;
+    }
+</style>
