@@ -92,27 +92,37 @@
     onMount(() => {
         mounted = true;
         // Start progress animation
-        progressWidth.set(100);
+        updateProgress();
         
         // Auto-advance through steps
         const interval = setInterval(() => {
             activeStep = (activeStep + 1) % processSteps.length;
-        }, 4000);
+            updateProgress();
+        }, 5000);
 
         return () => clearInterval(interval);
     });
 
     function setActiveStep(index) {
         activeStep = index;
+        updateProgress();
+    }
+
+    function updateProgress() {
+        // Calculate progress based on active step (0-based index, so we use activeStep for partial progress)
+        const progress = ((activeStep) / (processSteps.length - 1)) * 100;
+        progressWidth.set(progress);
     }
 </script>
 
 <section id="development-process" class="py-20 bg-gradient-to-br from-neutral-100 to-neutral-200 relative overflow-hidden">
-    <!-- Floating coffee elements -->
+    <!-- Animated background elements -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
         <div class="absolute top-20 right-10 text-4xl opacity-10 animate-float" style="animation-delay: 0s">☕</div>
         <div class="absolute bottom-40 left-20 text-4xl opacity-10 animate-float" style="animation-delay: 1s">☕</div>
         <div class="absolute top-1/2 right-1/4 text-4xl opacity-10 animate-float" style="animation-delay: 2s">☕</div>
+        <div class="absolute bottom-20 right-40 w-32 h-32 bg-purple-200 rounded-full blur-3xl opacity-20 animate-pulse"></div>
+        <div class="absolute top-40 left-10 w-40 h-40 bg-pink-200 rounded-full blur-3xl opacity-20 animate-pulse" style="animation-delay: 1.5s"></div>
     </div>
 
     <div class="container mx-auto px-4 max-w-6xl relative z-10">
@@ -128,61 +138,109 @@
             </p>
         </div>
 
-        <!-- Progress Bar -->
+        <!-- Improved Progress Bar -->
         {#if mounted}
-            <div class="mb-12 max-w-4xl mx-auto" in:scale={{ duration: 800, delay: 400 }}>
-                <div class="bg-neutral-300 rounded-full h-2 relative overflow-hidden">
-                    <div 
-                        class="absolute inset-y-0 left-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full transition-all duration-1000"
-                        style="width: {($progressWidth / 5) * (activeStep + 1)}%"
-                    ></div>
-                    <!-- Step indicators -->
-                    <div class="absolute inset-0 flex justify-between items-center px-2">
+            <div class="mb-16 max-w-5xl mx-auto px-8" in:scale={{ duration: 800, delay: 400 }}>
+                <!-- Step labels at top -->
+                <div class="flex justify-between mb-4">
+                    {#each processSteps as step, i}
+                        <button
+                            on:click={() => setActiveStep(i)}
+                            class="text-center flex-1 cursor-pointer group"
+                            aria-label="Go to {step.title}"
+                        >
+                            <span class="text-2xl mb-2 block transition-transform duration-300 group-hover:scale-110 {activeStep === i ? 'scale-110' : ''}">
+                                {step.emoji}
+                            </span>
+                            <span class="text-xs md:text-sm font-medium {activeStep === i ? 'text-purple-600' : 'text-neutral-500'} hidden md:block">
+                                {step.title}
+                            </span>
+                        </button>
+                    {/each}
+                </div>
+                
+                <!-- Progress track -->
+                <div class="relative">
+                    <div class="bg-neutral-200 rounded-full h-3 shadow-inner overflow-hidden">
+                        <div 
+                            class="h-full bg-gradient-to-r from-purple-600 to-pink-600 rounded-full transition-all duration-1000 shadow-sm"
+                            style="width: {$progressWidth}%"
+                        ></div>
+                    </div>
+                    
+                    <!-- Step dots -->
+                    <div class="absolute inset-0 flex justify-between items-center">
                         {#each processSteps as step, i}
-                            <button
-                                on:click={() => setActiveStep(i)}
-                                class="w-6 h-6 rounded-full transition-all duration-300 {activeStep >= i ? 'bg-gradient-to-r from-purple-600 to-pink-600 scale-125' : 'bg-white border-2 border-neutral-400'}"
-                                aria-label="Step {i + 1}"
-                            ></button>
+                            <div class="relative">
+                                <button
+                                    on:click={() => setActiveStep(i)}
+                                    class="w-8 h-8 rounded-full transition-all duration-300 shadow-md
+                                           {activeStep >= i 
+                                             ? 'bg-gradient-to-r from-purple-600 to-pink-600 scale-110' 
+                                             : 'bg-white border-3 border-neutral-300 hover:border-purple-400'}"
+                                    aria-label="Step {i + 1}"
+                                >
+                                    {#if activeStep > i}
+                                        <span class="text-white text-sm">✓</span>
+                                    {:else if activeStep === i}
+                                        <span class="absolute inset-0 rounded-full bg-white opacity-30 animate-ping"></span>
+                                    {/if}
+                                </button>
+                            </div>
                         {/each}
                     </div>
+                </div>
+                
+                <!-- Current step indicator -->
+                <div class="text-center mt-4">
+                    <span class="text-sm text-neutral-600">
+                        Step <span class="font-bold text-purple-600">{activeStep + 1}</span> of {processSteps.length}
+                    </span>
                 </div>
             </div>
         {/if}
 
-        <!-- Process Steps -->
+        <!-- Process Step Cards -->
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
             {#each processSteps as step, i}
                 {#if mounted}
                     <button
                         on:click={() => setActiveStep(i)}
-                        class="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 cursor-pointer text-left
-                               {activeStep === i ? 'ring-2 ring-purple-500 scale-105' : 'hover:scale-105'}"
+                        class="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition-all duration-300 cursor-pointer text-left transform
+                               {activeStep === i 
+                                 ? 'ring-2 ring-purple-500 ring-offset-2 scale-105 shadow-xl' 
+                                 : 'hover:scale-105 hover:-translate-y-1'}"
                         in:fly={{ y: 50, duration: 800, delay: i * 150 }}
                     >
                         <div class="flex items-start gap-4 mb-4">
-                            <div class="text-3xl">{step.emoji}</div>
+                            <div class="text-3xl flex-shrink-0 {activeStep === i ? 'animate-bounce' : ''}">{step.emoji}</div>
                             <div class="flex-1">
-                                <h3 class="text-xl font-bold text-neutral-800 mb-1">
+                                <h3 class="text-lg font-bold text-neutral-800 mb-1">
                                     <span class="font-mono text-sm text-neutral-500">0{step.id}.</span> {step.title}
                                 </h3>
-                                <p class="text-sm text-neutral-600">{step.description}</p>
+                                <p class="text-sm text-neutral-600 line-clamp-2">{step.description}</p>
                             </div>
                         </div>
                         
                         <!-- Mini tools preview -->
                         <div class="flex flex-wrap gap-1 mt-3">
                             {#each step.tools.slice(0, 3) as tool}
-                                <span class="text-xs px-2 py-1 bg-neutral-100 rounded-full text-neutral-600">
+                                <span class="text-xs px-2 py-1 bg-gradient-to-r {step.color} text-white rounded-full font-medium">
                                     {tool}
                                 </span>
                             {/each}
                             {#if step.tools.length > 3}
-                                <span class="text-xs px-2 py-1 text-neutral-500">
+                                <span class="text-xs px-2 py-1 text-neutral-500 font-medium">
                                     +{step.tools.length - 3}
                                 </span>
                             {/if}
                         </div>
+                        
+                        {#if activeStep === i}
+                            <div class="mt-3 text-xs font-medium text-purple-600">
+                                ← Currently here
+                            </div>
+                        {/if}
                     </button>
                 {/if}
             {/each}
@@ -191,88 +249,93 @@
         <!-- Active Step Details -->
         {#if mounted}
             <div class="max-w-4xl mx-auto" in:fade={{ duration: 500 }}>
-                <div class="bg-white rounded-xl shadow-xl p-8 border-t-4 border-gradient" 
-                     style="border-image: linear-gradient(to right, {processSteps[activeStep].color.split(' ')[1]}, {processSteps[activeStep].color.split(' ')[3]}) 1;">
+                <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                    <!-- Gradient header bar -->
+                    <div class="h-2 bg-gradient-to-r {processSteps[activeStep].color}"></div>
                     
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="w-16 h-16 rounded-full bg-gradient-to-br {processSteps[activeStep].color} flex items-center justify-center text-white text-2xl">
-                            {processSteps[activeStep].emoji}
-                        </div>
-                        <div>
-                            <h3 class="text-2xl font-bold text-neutral-800">
-                                {processSteps[activeStep].title}
-                            </h3>
-                            <p class="text-neutral-600">{processSteps[activeStep].description}</p>
-                        </div>
-                    </div>
-
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <!-- Details -->
-                        <div>
-                            <h4 class="font-bold text-neutral-800 mb-3 flex items-center gap-2">
-                                <span class="font-mono text-purple-600">const</span> activities =
-                            </h4>
-                            <ul class="space-y-2">
-                                {#each processSteps[activeStep].details as detail}
-                                    <li class="flex items-start gap-2 text-neutral-700">
-                                        <span class="text-green-500 mt-1">✓</span>
-                                        <span class="text-sm">{detail}</span>
-                                    </li>
-                                {/each}
-                            </ul>
-                        </div>
-
-                        <!-- Tools -->
-                        <div>
-                            <h4 class="font-bold text-neutral-800 mb-3 flex items-center gap-2">
-                                <span class="font-mono text-pink-600">import</span> tools from
-                            </h4>
-                            <div class="flex flex-wrap gap-2">
-                                {#each processSteps[activeStep].tools as tool}
-                                    <span class="px-3 py-1 bg-gradient-to-r {processSteps[activeStep].color} text-white rounded-full text-sm font-medium">
-                                        {tool}
-                                    </span>
-                                {/each}
+                    <div class="p-8">
+                        <div class="flex items-center gap-4 mb-8">
+                            <div class="w-20 h-20 rounded-2xl bg-gradient-to-br {processSteps[activeStep].color} flex items-center justify-center text-white text-3xl shadow-lg">
+                                {processSteps[activeStep].emoji}
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-neutral-800">
+                                    {processSteps[activeStep].title}
+                                </h3>
+                                <p class="text-neutral-600 mt-1">{processSteps[activeStep].description}</p>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Quality Quote -->
-                    <div class="mt-6 p-4 bg-neutral-50 rounded-lg border-l-4 border-purple-500">
-                        <p class="text-neutral-700 italic">
-                            {#if activeStep === 0}
-                                "Quality is not an act, it's a habit. It starts from the first line of planning." ☕
-                            {:else if activeStep === 1}
-                                "Every test written is a bug prevented, every line reviewed is quality assured." 🚀
-                            {:else if activeStep === 2}
-                                "Breaking things today so users don't have to tomorrow. That's the QA way!" ✨
-                            {:else if activeStep === 3}
-                                "Ship it with confidence, monitor it with diligence, celebrate with coffee." ☕
-                            {:else}
-                                "The best code is the one that keeps evolving. Iterate, improve, inspire!" 🎯
-                            {/if}
-                        </p>
-                        <p class="text-sm text-neutral-500 mt-2">— Juan Bautista Martinez, QA Engineer @ Cursor AI</p>
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <!-- Details -->
+                            <div>
+                                <h4 class="font-bold text-neutral-800 mb-4 flex items-center gap-2">
+                                    <span class="font-mono text-purple-600">const</span> activities =
+                                </h4>
+                                <ul class="space-y-3">
+                                    {#each processSteps[activeStep].details as detail, j}
+                                        <li class="flex items-start gap-3 text-neutral-700"
+                                            in:fly={{ x: -20, duration: 500, delay: j * 100 }}>
+                                            <span class="text-green-500 mt-0.5 flex-shrink-0">✓</span>
+                                            <span class="text-sm leading-relaxed">{detail}</span>
+                                        </li>
+                                    {/each}
+                                </ul>
+                            </div>
+
+                            <!-- Tools -->
+                            <div>
+                                <h4 class="font-bold text-neutral-800 mb-4 flex items-center gap-2">
+                                    <span class="font-mono text-pink-600">import</span> tools from
+                                </h4>
+                                <div class="flex flex-wrap gap-2">
+                                    {#each processSteps[activeStep].tools as tool, k}
+                                        <span class="px-4 py-2 bg-gradient-to-r {processSteps[activeStep].color} text-white rounded-full text-sm font-medium shadow-md hover:shadow-lg transition-shadow duration-200"
+                                              in:scale={{ duration: 400, delay: k * 50 }}>
+                                            {tool}
+                                        </span>
+                                    {/each}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quality Quote -->
+                        <div class="mt-8 p-6 bg-gradient-to-br from-neutral-50 to-neutral-100 rounded-xl border-l-4 {activeStep % 2 === 0 ? 'border-purple-500' : 'border-pink-500'}">
+                            <p class="text-neutral-700 italic text-lg">
+                                {#if activeStep === 0}
+                                    "Quality is not an act, it's a habit. It starts from the first line of planning." ☕
+                                {:else if activeStep === 1}
+                                    "Every test written is a bug prevented, every line reviewed is quality assured." 🚀
+                                {:else if activeStep === 2}
+                                    "Breaking things today so users don't have to tomorrow. That's the QA way!" ✨
+                                {:else if activeStep === 3}
+                                    "Ship it with confidence, monitor it with diligence, celebrate with coffee." ☕
+                                {:else}
+                                    "The best code is the one that keeps evolving. Iterate, improve, inspire!" 🎯
+                                {/if}
+                            </p>
+                            <p class="text-sm text-neutral-500 mt-3 font-medium">— Juan Bautista Martinez, QA Engineer @ Cursor AI</p>
+                        </div>
                     </div>
                 </div>
             </div>
         {/if}
 
         <!-- Call to Action -->
-        <div class="text-center mt-12" in:fly={{ y: 20, duration: 800, delay: 1000 }}>
-            <p class="text-lg text-neutral-700 mb-4">
+        <div class="text-center mt-16" in:fly={{ y: 20, duration: 800, delay: 1000 }}>
+            <p class="text-lg text-neutral-700 mb-6">
                 <span class="font-mono">console.log(</span>"Fueled by coffee, driven by quality"<span class="font-mono">);</span> ☕
             </p>
-            <div class="flex gap-4 justify-center">
+            <div class="flex gap-4 justify-center flex-wrap">
                 <a 
                     href="#contact" 
-                    class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:opacity-90 transition-opacity duration-300 font-medium"
+                    class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 font-medium"
                 >
                     Let's Build Something Amazing
                 </a>
                 <a 
                     href="#skills" 
-                    class="inline-flex items-center gap-2 px-6 py-3 border-2 border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors duration-300 font-medium"
+                    class="inline-flex items-center gap-2 px-8 py-4 border-2 border-purple-600 text-purple-600 rounded-xl hover:bg-purple-50 hover:border-purple-700 transform hover:-translate-y-0.5 transition-all duration-200 font-medium"
                 >
                     View My Skills
                 </a>
@@ -296,8 +359,30 @@
         animation: float 4s ease-in-out infinite;
     }
 
-    /* Custom border gradient fix */
-    .border-gradient {
-        border-image-slice: 1;
+    /* Bounce animation */
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+    
+    .animate-bounce {
+        animation: bounce 1s ease-in-out infinite;
+    }
+
+    /* Line clamp utility */
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Custom border width */
+    .border-3 {
+        border-width: 3px;
     }
 </style>
