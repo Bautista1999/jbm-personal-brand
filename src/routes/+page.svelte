@@ -1,5 +1,6 @@
 <script>
   import Hero from "$lib/Hero.svelte";
+  import CodeIntro from "$lib/CodeIntro.svelte";
   import Projects from "$lib/Projects.svelte";
   import Skills from "$lib/Skills.svelte";
   import Contact from "$lib/Contact.svelte";
@@ -7,6 +8,7 @@
 
 <main>
   <Hero />
+  <CodeIntro />
   <Projects />
   <Skills />
   <Contact
